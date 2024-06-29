@@ -1,0 +1,239 @@
+#include <iostream>
+using namespace std;
+
+template <class dataType>
+class MyList
+{
+private:
+
+	struct element
+	{
+		dataType data;
+		element* prev;
+		element* next;
+	};
+	element* head;
+
+public:
+
+	MyList()
+	{
+		head = nullptr;
+	}
+
+	My_List(const My_List& OtherList)
+	{
+
+		element* OtherListAd = OtherList.head;
+		while (OtherListAd->prev != nullptr)
+		{
+			OtherListAd = OtherListAd->prev;
+		};
+		if (head != nullptr)
+		{
+			while (head->prev != nullptr)
+			{
+				head = head->prev;
+			};
+		}
+		else
+		{
+			head = new element;
+			head->prev = nullptr;
+			head->next = nullptr;
+		}
+
+		while (OtherListAd->next != nullptr)
+		{
+			head->data = OtherListAd->data;
+			if (head->next == nullptr)
+			{
+				head->next = new element;
+				head->next->next = nullptr;
+			}
+			head->next->prev = head;
+			head = head->next;
+			OtherListAd = OtherListAd->next;
+		};
+		head->data = OtherListAd->data;
+		head->next = nullptr;
+	}
+
+
+	bool IsEmptyList()
+	{
+		if (head != nullptr)
+			cout << "Не пустой list" << endl;
+		else
+			cout << "Пустой list" << endl;
+		return (head != nullptr);
+	}
+
+	void AddElementToTale(dataType newElement)
+	{
+		if (head == nullptr)
+		{
+			head = new element;
+			head->prev = nullptr;
+			head->next = nullptr;
+			head->data = newElement;
+		}
+		else
+		{
+			while (head->next != nullptr)
+			{
+				head = head->next;
+			}
+			head->next = new element;
+			head->next->prev = head;
+			head->next->next = nullptr;
+			head->next->data = newElement;
+		}
+	}
+
+	void AddElementToHead(dataType newElement)
+	{
+		if (head != nullptr)
+		{
+			while (head->prev != nullptr)
+			{
+				head = head->prev;
+			}
+			head->prev = new element;
+			head->prev->prev = nullptr;
+			head->prev->next = head;
+			head->prev->data = newElement;
+		}
+		else
+		{
+			head = new element;
+			head->prev = nullptr;
+			head->next = nullptr;
+			head->data = newElement;
+		}
+
+	}
+
+	void ChangeElementByAdress(element* elemToChange, dataType newData)
+	{
+		elemToChange->data = newData;
+	}
+
+	void PrintList()
+	{
+		if (head != nullptr)
+		{
+			while (head->prev != nullptr)
+			{
+				head = head->prev;
+			}
+			cout << "Элементы list: " << endl;
+			while (head->next != nullptr)
+			{
+				cout << head->data << endl;
+				head = head->next;
+			}
+			cout << head->data << endl;
+		}
+		else
+			cout << "List пустой" << endl;
+	}
+
+	dataType FindElementByAdress(element* elemToChange)
+	{
+		return elemToChange->data;
+	}
+
+	element* FindElementByValue(dataType value)
+	{
+		while (head->prev != nullptr)
+		{
+			head = head->prev;
+		}
+
+		if (head->data == value)
+		{
+
+			return (head);
+		}
+
+		while (head->next != nullptr)
+		{
+			head = head->next;
+			if (head->data == value)
+			{
+				return (head);
+			}
+		}
+		return nullptr;
+	}
+
+	void DeleteElementByValue(dataType value)
+	{
+		element* elemForDel = FindElementByValue(value);
+		if (elemForDel != nullptr)
+		{
+			if (elemForDel->prev != nullptr)
+				elemForDel->prev->next = elemForDel->next;
+			if (elemForDel->next != nullptr)
+				elemForDel->next->prev = elemForDel->prev;
+			if (elemForDel->prev != nullptr)
+				head = head->prev;
+			else if (elemForDel->next != nullptr)
+				head = head->next;
+			else
+				head = nullptr;
+			delete elemForDel;
+		}
+		else
+			cout << "Данного элемента нет в list" << endl;
+	}
+
+	void DeleteElementByAdress(element* elemForDel)
+	{
+		if (elemForDel != nullptr)
+		{
+			if (elemForDel->prev != nullptr)
+			{
+				elemForDel->prev->next = elemForDel->next;
+			}
+			if (elemForDel->next != nullptr)
+			{
+				elemForDel->next->prev = elemForDel->prev;
+			}
+			if (elemForDel->prev != nullptr)
+				head = head->prev;
+			else if (elemForDel->next != nullptr)
+				head = head->next;
+			else
+				head = nullptr;
+			delete elemForDel;
+		}
+		else
+			cout << "Неверный адресс" << endl;
+	}
+};
+
+template <typename dataType>
+class  MyStack :MyList<dataType> {};
+
+template <typename dataType>
+class MyQueue : MyList<dataType> {};
+
+int main()
+{
+	MyList<char>  charTestList;
+	charTestList.AddElementToHead('a');
+	charTestList.AddElementToTale('b');
+	charTestList.AddElementToTale('c');
+	charTestList.PrintList();
+	cout << "Поменяем знак а на знак d" << endl;
+	charTestList.ChangeElementByAdress(charTestList.FindElementByValue('c'), 'd');
+	charTestList.PrintList();
+	cout << "Удалим все элементы" << endl;
+	charTestList.DeleteElementByAdress(charTestList.FindElementByValue('d'));
+	charTestList.DeleteElementByValue('b');
+	charTestList.DeleteElementByValue('a');
+	charTestList.PrintList();
+	system("pause");
+}
